@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestYoutubeClient_GetVideoInfo(t *testing.T) {
@@ -122,12 +123,14 @@ func TestYoutubeClient_ParseVideoURL(t *testing.T) {
 						return
 					}
 
-					_, err = c.GetVideoInfo(tt.args.videoURL)
+					resp, err := c.GetVideoInfo(tt.args.videoURL)
 					if err != nil {
 						result.ErrorCount = result.ErrorCount + 1
 						result.ErrorMessage += err.Error()
 						return
 					}
+
+					fmt.Printf("execution time: %s\n views count: %d\n", time.Now().Format("15:04:05.000"), resp.ViewCount)
 				}()
 			}
 			wg.Wait()
