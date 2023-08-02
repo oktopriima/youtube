@@ -3,6 +3,7 @@ package media_share
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -103,6 +104,14 @@ func TestYoutubeClient_ParseVideoURL(t *testing.T) {
 				ErrorMessage string
 			}{}
 
+			f, err := os.Create("data.txt")
+			if err != nil {
+				t.Logf("ERROR. failed create file. %v", err)
+				return
+			}
+
+			defer f.Close()
+
 			wg := &sync.WaitGroup{}
 
 			for i := 1; i <= tt.loop; i++ {
@@ -127,6 +136,14 @@ func TestYoutubeClient_ParseVideoURL(t *testing.T) {
 					if err != nil {
 						result.ErrorCount = result.ErrorCount + 1
 						result.ErrorMessage += err.Error()
+						return
+					}
+
+					message := fmt.Sprintf("Execution Time: %s\nVideo Title: %s\nChannel Title: %s\nView Count: %d\nPublished Year: %s\n\n",
+						time.Now().Format("15:04:05.000"), resp.VideoTitle, resp.ChannelTitle, resp.ViewCount, resp.PublishYear)
+					_, err = f.WriteString(message)
+					if err != nil {
+						t.Logf("ERROR. failed write file. %v", err)
 						return
 					}
 
