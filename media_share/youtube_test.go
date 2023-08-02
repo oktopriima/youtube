@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -104,7 +105,7 @@ func TestYoutubeClient_ParseVideoURL(t *testing.T) {
 				ErrorMessage string
 			}{}
 
-			f, err := os.Create("data.txt")
+			f, err := os.Create(fmt.Sprintf("test-result-%s.txt", strings.ToLower(strings.ReplaceAll(tt.name, " ", "-"))))
 			if err != nil {
 				t.Logf("ERROR. failed create file. %v", err)
 				return
@@ -139,8 +140,8 @@ func TestYoutubeClient_ParseVideoURL(t *testing.T) {
 						return
 					}
 
-					message := fmt.Sprintf("Execution Time: %s\nVideo Title: %s\nChannel Title: %s\nView Count: %d\nPublished Year: %s\n\n",
-						time.Now().Format("15:04:05.000"), resp.VideoTitle, resp.ChannelTitle, resp.ViewCount, resp.PublishYear)
+					message := fmt.Sprintf("Video URL: %s\nExecution Time: %s\nVideo Title: %s\nChannel Title: %s\nView Count: %d\nPublished Year: %s\n\n",
+						tt.args.videoURL, time.Now().Format("15:04:05.000"), resp.VideoTitle, resp.ChannelTitle, resp.ViewCount, resp.PublishYear)
 					_, err = f.WriteString(message)
 					if err != nil {
 						t.Logf("ERROR. failed write file. %v", err)
